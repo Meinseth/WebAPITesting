@@ -14,7 +14,7 @@ namespace WebAPITesting.Models
             base.OnModelCreating(builder);
 
             builder.Entity<User>().HasData(
-                new User { Id = 1,Username = "mindseth", Password = "12113662", Firstname = "vebjorn", Lastname = "meinseth", Email = "vebjor@meinseth.no" }
+                new User { Id = 1,Username = "mindseth", Password = "qwer1234", Firstname = "vebjorn", Lastname = "meinseth", Email = "vebjorn@test.no" }
             );
 
         }
