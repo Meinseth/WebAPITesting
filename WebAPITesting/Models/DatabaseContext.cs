@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace WebAPITesting.Models
 {
@@ -7,16 +7,16 @@ namespace WebAPITesting.Models
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
+        //dotnet ef migrations add
+        //dotnet ef database update
+
         public DbSet<User> Users { get; set; }
 
-        protected override void OnModelCreating(ModelBuilder builder)
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            base.OnModelCreating(builder);
+            base.OnConfiguring(optionsBuilder);
 
-            builder.Entity<User>().HasData(
-                new User { Id = 1,Username = "mindseth", Password = "qwer1234", Firstname = "vebjorn", Lastname = "meinseth", Email = "vebjorn@test.no" }
-            );
-
+            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=SQLTesting;Trusted_Connection=true;");
         }
     }
 }
