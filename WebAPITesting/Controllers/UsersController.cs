@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using WebAPITesting.Models;
 
 namespace WebAPITesting.Controllers
@@ -15,10 +17,12 @@ namespace WebAPITesting.Controllers
     public class UsersController : ControllerBase
     {
         private readonly DatabaseContext _context;
+        private readonly IMapper _mapper;
 
-        public UsersController(DatabaseContext context)
+        public UsersController(DatabaseContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         //// GET: api/Users
@@ -116,8 +120,8 @@ namespace WebAPITesting.Controllers
         //    return NoContent();
         //}
 
-        [HttpGet("login")]
-        public async Task<ActionResult<User>> LoginUser([FromBody] User loginUser)
+        [HttpPost("login")]
+        public async Task<ActionResult<User>> LoginUser([FromBody] UserLogin loginUser)
         {
             if (_context.Users == null)
                 return NotFound();
