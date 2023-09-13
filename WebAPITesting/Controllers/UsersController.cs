@@ -5,9 +5,11 @@ using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Microsoft.SqlServer.Server;
 using WebAPITesting.Models;
 
 namespace WebAPITesting.Controllers
@@ -26,7 +28,7 @@ namespace WebAPITesting.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<User>> LoginUser([FromBody] UserLogin loginUser)
+        public async Task<ActionResult<UserDto>> LoginUser([FromBody] User loginUser)
         {
             if (_context.Users == null)
                 return NotFound();
@@ -38,11 +40,11 @@ namespace WebAPITesting.Controllers
                 return NotFound();
             }
 
-            return user;
+            return _mapper.Map<UserDto>(user);
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<User>> RegisterUser([FromBody] User registerUser)
+        public async Task<ActionResult<UserDto>> RegisterUser([FromBody] User registerUser)
         {
             if (_context.Users == null)
                 return NotFound();
@@ -52,16 +54,11 @@ namespace WebAPITesting.Controllers
                 return Content("Email exist");
             }
 
-            _context.Users.Add(registerUser);
+            var user = _context.Users.Add(registerUser);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(RegisterUser), new { id = registerUser.Id }, registerUser);
+            return _mapper.Map<UserDto>(user);
 
-        }
-
-        private bool UserExists(long id)
-        {
-            return (_context.Users?.Any(user => user.Id == id)).GetValueOrDefault();
         }
 
         private bool EmailExists(string email)

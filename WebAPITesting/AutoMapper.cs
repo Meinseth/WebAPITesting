@@ -7,7 +7,8 @@ namespace WebAPITesting
     {
         public AutoMapper()
         {
-            CreateMap<User, UserLogin>();
+            CreateMap<User, UserDto>();
+            CreateMap<Movie, MovieDto>();
         }
     }
 }
