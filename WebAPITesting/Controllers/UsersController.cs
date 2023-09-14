@@ -28,7 +28,7 @@ namespace WebAPITesting.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> LoginUser([FromBody] User loginUser)
+        public async Task<ActionResult<UserDto>> LoginUser([FromBody] UserLogin loginUser)
         {
             if (_context.Users == null)
                 return NotFound();
@@ -54,10 +54,10 @@ namespace WebAPITesting.Controllers
                 return Content("Email exist");
             }
 
-            var user = _context.Users.Add(registerUser);
+            _context.Users.Add(registerUser);
             await _context.SaveChangesAsync();
 
-            return _mapper.Map<UserDto>(user);
+            return _mapper.Map<UserDto>(registerUser);
 
         }
 
