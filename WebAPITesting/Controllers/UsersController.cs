@@ -35,7 +35,7 @@ namespace WebAPITesting.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> LoginUser([FromBody] User loginUser)
+        public async Task<ActionResult<AppUserDto>> LoginUser([FromBody] AppUserLogin loginUser)
         {
             if (ModelState.IsValid)
             {
