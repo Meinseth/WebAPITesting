@@ -30,7 +30,7 @@ namespace WebAPITesting.Controllers
             {
                 return NotFound();
             }
-            var movies = await _context.Movies.Where(movie => movie.User.Guid == userGuid).ToListAsync();
+            var movies = await _context.Movies.Where(movie => movie.User.Id == userGuid.ToString()).ToListAsync();
 
             if (movies == null)
             {

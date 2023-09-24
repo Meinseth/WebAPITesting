@@ -4,8 +4,10 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -14,51 +16,70 @@ using WebAPITesting.Models;
 
 namespace WebAPITesting.Controllers
 {
+    [AllowAnonymous]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly DatabaseContext _context;
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public UsersController(DatabaseContext context, IMapper mapper)
+        public UsersController(DatabaseContext context, IMapper mapper, UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _context = context;
             _mapper = mapper;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<UserDto>> LoginUser([FromBody] User loginUser)
+        public async Task<ActionResult<AppUserDto>> LoginUser([FromBody] AppUserLogin loginUser)
         {
-            if (_context.Users == null)
-                return NotFound();
-
-            var user = await _context.Users.FirstOrDefaultAsync(user => user.Email == loginUser.Email && user.Password == loginUser.Password);
-
-            if (user == null)
+            if (ModelState.IsValid)
             {
-                return NotFound();
-            }
 
-            return _mapper.Map<UserDto>(user);
+                var result = await _signInManager.PasswordSignInAsync(loginUser.Email, loginUser.Password,false,lockoutOnFailure: true);
+
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByEmailAsync(loginUser.Email);
+                    return _mapper.Map<AppUserDto>(user);
+                }
+
+                
+            }
+            return BadRequest();
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<UserDto>> RegisterUser([FromBody] User registerUser)
+        public async Task<ActionResult<AppUserDto>> RegisterUser([FromBody] AppUserRegister registerUser)
         {
-            if (_context.Users == null)
-                return NotFound();
-
-            if (EmailExists(registerUser.Email))
+            if(ModelState.IsValid) 
             {
-                return Content("Email exist");
+                if (EmailExists(registerUser.Email!))
+                {
+                    return Content("Email exist");
+                }
+                var newUser = new AppUser { 
+                    Firstname = registerUser.Firstname, 
+                    Lastname = registerUser.Lastname,
+                    UserName = registerUser.Email, 
+                    Email = registerUser.Email 
+                };
+                var result = await _userManager.CreateAsync(newUser, registerUser.Password);
+
+                if (result.Succeeded)
+                {
+                    var user = await _userManager.FindByEmailAsync(registerUser.Email);
+                    return _mapper.Map<AppUserDto>(user);
+                }
+
+                return BadRequest();
             }
-
-            var user = _context.Users.Add(registerUser);
-            await _context.SaveChangesAsync();
-
-            return _mapper.Map<UserDto>(user);
-
+            
+            return BadRequest();
         }
 
         private bool EmailExists(string email)

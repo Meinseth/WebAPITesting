@@ -1,8 +1,8 @@
 ﻿namespace WebAPITesting.Models
 {
-    public class UserDto
+    public class AppUserDto
     {
-        public Guid Guid { get; set; } = Guid.NewGuid();
+        public required string Id { get; set; }
         public required string Firstname { get; set; }
         public required string Lastname { get; set; }
         public required string Email { get; set; }

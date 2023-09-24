@@ -1,24 +1,28 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using System.Reflection;
-using static System.Runtime.InteropServices.JavaScript.JSType;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace WebAPITesting.Models
 {
-    public class DatabaseContext : DbContext
+    public class DatabaseContext : IdentityDbContext<AppUser>
     {
         public DatabaseContext(DbContextOptions<DatabaseContext> options) : base(options) { }
 
         //dotnet ef migrations add
         //dotnet ef database update
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<AppUser> AppUsers { get; set; }
         public DbSet<Movie> Movies { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
 
-            optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=SQLTesting;Trusted_Connection=true;");
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer("Server=(localdb)\\MSSQLLocalDB;Database=SQLTesting;Trusted_Connection=true;");
+            }
+            
         }
         protected override void OnModelCreating(ModelBuilder builder)
         {

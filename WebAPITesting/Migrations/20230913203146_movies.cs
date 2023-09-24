@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace WebAPITesting.Migrations
 {
     /// <inheritdoc />
-    public partial class movies : Migration
+    public partial class Movies : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

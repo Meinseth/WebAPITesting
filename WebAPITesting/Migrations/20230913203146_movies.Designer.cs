@@ -13,7 +13,7 @@ namespace WebAPITesting.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
     [Migration("20230913203146_movies")]
-    partial class movies
+    partial class Movies
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
